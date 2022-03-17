@@ -4,7 +4,7 @@ import Login from "./screens/auth/Login";
 import Search from "./screens/content/Search";
 
 function App() {
-  const auth = true;
+  const auth = false;
   return (
     <div className="App">
       <div className="container">{auth ? <Login /> : <Search />}</div>

@@ -5,7 +5,7 @@ const Login = () => {
     <form className="row g-3 d-flex justify-content-center" style={{ border: "1px solid rgba(0, 0, 0, 0.05)" }}>
       <div className="col-auto">
         <label htmlFor="staticEmail2" className="visually-hidden">
-          Email
+          Username
         </label>
         <input type="text" className="form-control" id="staticEmail2" placeholder="Your username" />
       </div>
