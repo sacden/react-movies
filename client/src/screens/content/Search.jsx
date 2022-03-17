@@ -3,57 +3,43 @@ import { Dropdown } from "react-bootstrap";
 
 const Search = () => {
   const years = [2022, 2021, 2020];
-  const types = ["Comedy", "Adventure", "Fantasy"];
+  const types = ["movie", "series", "episode"];
 
   const [year, setYear] = useState("year");
   const [type, setType] = useState("type");
   const [search, setSearch] = useState("");
 
-  const movies = [
-    { name: "The Turning", year: 2020, type: "Fantasy" },
-    { name: "Run", year: 2020, type: "Aventure" },
-    { name: "Fatman", year: 2020, type: "Comedy" },
+  const [backendData, setBackendData] = useState({});
 
-    { name: "King Richard", year: 2021, type: "Fantasy" },
-    { name: "Infinite", year: 2021, type: "Adventure" },
-    { name: "After we fell", year: 2021, type: "Comedy" },
+  useEffect(() => {
+    fetch("/api")
+      .then((response) => response.json())
+      .then((data) => setBackendData(data));
+  }, []);
 
-    { name: "Big bug", year: 2022, type: "Fantasy" },
-    { name: "Brazen", year: 2022, type: "Adventure" },
-    { name: "Love Tactics", year: 2022, type: "Comedy" },
-  ];
-  //const [filteredMovies, setFilteredMovies] = useState(movies);
+  useEffect(() => {
+    let params = {
+      s: search,
+      y: year,
+      type: type,
+    };
 
-  //let filteredMovies = movies.filter((el) => el.name.toLowerCase().includes(search.toLocaleLowerCase()) || el.year === year || el.type === type);
+    let query = Object.keys(params)
+      .map((k) => encodeURIComponent(k) + "=" + encodeURIComponent(params[k]))
+      .join("&");
 
-  //   useEffect(() => {
-  //     if (search) {
-  //       setFilteredMovies(movies.filter((el) => el.name.toLowerCase().includes(search.toLocaleLowerCase())));
-  //     }
-  //   }, [search]);
+    let url = "http://localhost:8080/?" + query;
+    console.log(url);
 
-  //   useEffect(() => {
-  //     if (year) {
-  //       setFilteredMovies(movies.filter((el) => el.year === year));
-  //     }
-  //   }, [year]);
-
-  //   useEffect(() => {
-  //     if (type) {
-  //       setFilteredMovies(filteredMovies.filter((el) => el.type === type));
-  //     }
-  //   }, [type]);
-
-  //   if (type === "Type" && search === "") {
-  //     filteredMovies = movies.filter((el) => el.year === year);
-  //   }
-  //   if (year === "Year" && search === "") {
-  //     filteredMovies = movies.filter((el) => el.type === type);
-
-  //   } else {
-
-  //filteredMovies = movies.filter((el) => el.name.toLowerCase().includes(search.toLocaleLowerCase()) && el.type === type && el.year === year);
-  //}
+    fetch(url)
+      .then((data) => data.text())
+      .then((text) => {
+        console.log("request succeeded with JSON response", text);
+      })
+      .catch(function (error) {
+        console.log("request failed", error);
+      });
+  }, [search, year, type]);
 
   return (
     <form className="row g-3 d-flex justify-content-center">
@@ -97,13 +83,18 @@ const Search = () => {
         </Dropdown>
       </div>
 
-      <h1>RESULTS</h1>
-
-      {movies.map((el, index) => (
-        <p key={index}>
-          {el.name} : {el.year} : {el.type}
-        </p>
-      ))}
+      <h1>MOVIES</h1>
+      <div>
+        {Object.keys(backendData).length === 0 ? (
+          <p>Loading...</p>
+        ) : (
+          //Object.entries(backendData).map(([key, value]) => {
+          //return <p key={value}>{value}</p>;
+          //console.log(value);
+          <p>{backendData.Title}</p>
+          //})
+        )}
+      </div>
     </form>
   );
 };
