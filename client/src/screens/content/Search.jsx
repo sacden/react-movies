@@ -5,17 +5,11 @@ const Search = () => {
   const years = [2022, 2021, 2020];
   const types = ["movie", "series", "episode"];
 
-  const [year, setYear] = useState("year");
-  const [type, setType] = useState("type");
-  const [search, setSearch] = useState("");
+  const [year, setYear] = useState("");
+  const [type, setType] = useState("");
+  const [search, setSearch] = useState("simpsons");
 
-  const [backendData, setBackendData] = useState({});
-
-  useEffect(() => {
-    fetch("/api")
-      .then((response) => response.json())
-      .then((data) => setBackendData(data));
-  }, []);
+  const [api, setApi] = useState({});
 
   useEffect(() => {
     let params = {
@@ -28,17 +22,25 @@ const Search = () => {
       .map((k) => encodeURIComponent(k) + "=" + encodeURIComponent(params[k]))
       .join("&");
 
-    let url = "http://localhost:8080/?" + query;
-    console.log(url);
+    let url = "http://localhost:8080/api?" + query;
 
-    fetch(url)
-      .then((data) => data.text())
-      .then((text) => {
-        console.log("request succeeded with JSON response", text);
-      })
-      .catch(function (error) {
-        console.log("request failed", error);
-      });
+    //if search word had more then 4 charachters
+    if (search.split("").length > 4) {
+      //send a query to BE
+      fetch(url)
+        .then((data) => data.text())
+        .then((text) => {
+          console.log("request succeeded with JSON response", text);
+        })
+        .catch(function (error) {
+          console.log("request failed", error);
+        });
+
+      //returns object with movies from BE
+      fetch("/movies")
+        .then((response) => response.json())
+        .then((data) => setApi(data));
+    }
   }, [search, year, type]);
 
   return (
@@ -48,13 +50,13 @@ const Search = () => {
         <label htmlFor="staticEmail2" className="visually-hidden">
           Search
         </label>
-        <input type="text" className="form-control" id="staticEmail2" placeholder="Search" onChange={(e) => setSearch(e.currentTarget.value)} />
+        <input type="text" className="form-control" id="staticEmail2" placeholder="Search" onChange={(e) => setSearch(e.currentTarget.value)} required />
       </div>
       {/* Years */}
       <div className="col-auto">
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic">
-            {year}
+            Year
           </Dropdown.Toggle>
 
           <Dropdown.Menu>
@@ -70,7 +72,7 @@ const Search = () => {
         {/* Types */}
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic">
-            {type}
+            Type
           </Dropdown.Toggle>
 
           <Dropdown.Menu>
@@ -85,14 +87,25 @@ const Search = () => {
 
       <h1>MOVIES</h1>
       <div>
-        {Object.keys(backendData).length === 0 ? (
+        {Object.keys(api).length === 0 ? (
           <p>Loading...</p>
+        ) : api.Response === "False" ? (
+          <p>Movie not found</p>
         ) : (
-          //Object.entries(backendData).map(([key, value]) => {
-          //return <p key={value}>{value}</p>;
-          //console.log(value);
-          <p>{backendData.Title}</p>
-          //})
+          <div className="row">
+            {api.Search.map((movie, i) => (
+              <div className="col-sm-3" key={i}>
+                <div className="card" style={{ width: "18rem" }}>
+                  <img className="card-img-top" src={movie?.Poster} style={{ height: "26rem" }} alt="Card image cap" />
+                  <div className="card-body">
+                    <h5 className="card-title">{movie.Title}</h5>
+                    <p className="card-text">Year: {movie?.Year}</p>
+                    <p className="card-text">Type: {movie?.Type}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </form>
