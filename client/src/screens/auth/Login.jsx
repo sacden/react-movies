@@ -5,26 +5,34 @@ const Login = ({ setToken }) => {
   const [password, setPassword] = useState();
 
   async function loginUser(credentials) {
-    return fetch("http://localhost:8080/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(credentials),
-    }).then((data) => data.json());
+    try {
+      return fetch("http://localhost:8080/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentials),
+      }).then((data) => data.json());
+    } catch (e) {
+      console.log("Error: " + e);
+    }
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const token = await loginUser({
-      username,
-      password,
-    });
-    setToken(token.token);
+    try {
+      e.preventDefault();
+      const token = await loginUser({
+        username,
+        password,
+      });
+      setToken(token.token);
+    } catch (error) {
+      console.log("Error: " + error);
+    }
   };
 
   return (
-    <form className="row g-3 d-flex " style={{ border: "1px solid rgba(0, 0, 0, 0.05)", height: "100vh" }} onSubmit={handleSubmit}>
+    <form className="row g-3 d-flex" style={{ border: "1px solid rgba(0, 0, 0, 0.05)", height: "100vh" }} onSubmit={handleSubmit}>
       <div className="row flex-column align-items-center justify-content-center h-100">
         <div className="form-group col-md-3" style={{ paddingRight: "0px", paddingLeft: "0px", marginBottom: "5px" }}>
           <label htmlFor="staticEmail2" className="visually-hidden">
@@ -43,9 +51,6 @@ const Login = ({ setToken }) => {
           Submit
         </button>
       </div>
-      {/* <div className="col-auto"> */}
-
-      {/* </div> */}
     </form>
   );
 };

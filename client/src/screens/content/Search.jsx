@@ -3,7 +3,7 @@ import { Dropdown } from "react-bootstrap";
 
 const Search = () => {
   const years = [...Array(72)].map((el, index) => index + 1950).reverse();
-  const types = ["movie", "series", "episode"];
+  const types = ["movie", "series"];
 
   const [year, setYear] = useState("");
   const [type, setType] = useState("");
@@ -24,9 +24,9 @@ const Search = () => {
 
     let url = "http://localhost:8080/api?" + query;
 
-    //if search word had more then 4 charachters
+    //if search word has more then 4 charachters
     if (search.split("").length > 4) {
-      //send a query to BE
+      //send a query from search input to BE
       fetch(url)
         .then((data) => data.text())
         .then((text) => {
@@ -36,7 +36,7 @@ const Search = () => {
           console.log("request failed", error);
         });
 
-      //returns object with movies from BE
+      //returns an object with movies from BE
       fetch("/movies")
         .then((response) => response.json())
         .then((data) => setApi(data));

@@ -1,10 +1,8 @@
-//Require express
 const express = require("express");
 const config = require("config");
 const fetch = require("node-fetch");
 const cors = require("cors");
 const redis = require("redis");
-const { promisify } = require("util");
 var bodyParser = require("body-parser");
 
 const url = require("url");
@@ -20,10 +18,7 @@ const client = redis.createClient(6379);
     console.log("Redis Client Error", err);
   });
   client.on("ready", () => console.log("Redis is ready"));
-
   await client.connect();
-
-  await client.ping();
 })();
 
 //parse body for getting login and password
@@ -31,18 +26,21 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const PORT = config.get("port") ?? 8080;
-
 app.use(cors());
 
 app.use("/login", (req, res) => {
-  if (req.body.username === "test" && req.body.password === "123") {
-    res.send({
-      token: true,
-    });
-  } else {
-    res.send({
-      token: false,
-    });
+  try {
+    if (req.body.username === "test" && req.body.password === "123") {
+      res.send({
+        token: true,
+      });
+    } else {
+      res.send({
+        token: false,
+      });
+    }
+  } catch (error) {
+    res.send(error.message);
   }
 });
 
