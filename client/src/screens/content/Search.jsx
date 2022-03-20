@@ -44,7 +44,7 @@ const Search = () => {
   }, [search, year, type]);
 
   return (
-    <form className="row g-3 d-flex justify-content-center">
+    <form className="row g-3 d-flex justify-content-center" style={{ marginTop: "5px" }}>
       {/* SearchBox */}
       <div className="col-auto">
         <label htmlFor="staticEmail2" className="visually-hidden">
@@ -85,19 +85,19 @@ const Search = () => {
         </Dropdown>
       </div>
 
-      <h1>MOVIES</h1>
       <div>
         {Object.keys(api).length === 0 ? (
-          <p>Loading...</p>
+          <p className="d-none">Loading...</p>
         ) : api.Response === "False" ? (
           <p>Movies were not found</p>
         ) : (
           <div className="row">
+            <h1>MOVIES</h1>
             {api.Search.map((movie, i) => (
               <div className="col-sm-3" key={i}>
                 <div className="card" style={{ width: "18rem" }}>
                   <img className="card-img-top" src={movie?.Poster} style={{ height: "26rem" }} alt="Card image cap" />
-                  <div className="card-body">
+                  <div className="card-body" style={{ height: "180px", border: "1px solid rgba(0, 0, 0, 0.05)" }}>
                     <h5 className="card-title">{movie.Title}</h5>
                     <p className="card-text">Year: {movie?.Year}</p>
                     <p className="card-text">Type: {movie?.Type}</p>
