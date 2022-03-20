@@ -13,16 +13,22 @@ let queryURL;
 //Create an instance of Express
 const app = express();
 
+const client = redis.createClient(6379);
+
+(async () => {
+  client.on("error", (err) => {
+    console.log("Redis Client Error", err);
+  });
+  client.on("ready", () => console.log("Redis is ready"));
+
+  await client.connect();
+
+  await client.ping();
+})();
+
+//parse body for getting login and password
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-const client = redis.createClient({
-  host: "http://127.0.0.1/",
-  port: 3000,
-});
-
-// const GET_ASYNC = promisify(client.get).bind(client);
-// const SET_ASYNC = promisify(client.set).bind(client);
 
 const PORT = config.get("port") ?? 8080;
 
@@ -51,23 +57,18 @@ app.get("/api", (req, res) => {
 
 app.get("/movies", async (req, res) => {
   try {
-    // const reply = await GET_ASYNC("search");
-    // console.log("reply: " + reply);
-    // if (reply) {
-    //   console.log("using cached data");
-    //   res.send(JSON.parse(reply));
-    //   return;
-    // }
-
     const API = "apikey=12dbe7d7&";
     const api_url = `http://www.omdbapi.com/?${API}${queryURL}`;
 
     const response = await fetch(api_url);
     const json = await response.json();
-    // console.log(json);
 
-    // const saveResult = await SET_ASYNC("Search", JSON.stringify(response), "EX", 5);
-    // console.log("new data cached", saveResult);
+    //saving to redis cache
+    await client.set("key", JSON.stringify(json));
+
+    //getting cache from redis
+    // const result = await client.get("key");
+    // console.log("movies: " + result);
 
     res.json(json);
   } catch (error) {
