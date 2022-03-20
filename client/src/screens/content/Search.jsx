@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Dropdown } from "react-bootstrap";
 
 const Search = () => {
-  const years = [2022, 2021, 2020];
+  const years = [...Array(72)].map((el, index) => index + 1950).reverse();
   const types = ["movie", "series", "episode"];
 
   const [year, setYear] = useState("");
   const [type, setType] = useState("");
-  const [search, setSearch] = useState("simpsons");
+  const [search, setSearch] = useState("");
 
   const [api, setApi] = useState({});
 
@@ -56,7 +56,7 @@ const Search = () => {
       <div className="col-auto">
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic">
-            Year
+            {year ? year : "Year"}
           </Dropdown.Toggle>
 
           <Dropdown.Menu>
@@ -72,7 +72,7 @@ const Search = () => {
         {/* Types */}
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic">
-            Type
+            {type ? type : "Type"}
           </Dropdown.Toggle>
 
           <Dropdown.Menu>
@@ -90,7 +90,7 @@ const Search = () => {
         {Object.keys(api).length === 0 ? (
           <p>Loading...</p>
         ) : api.Response === "False" ? (
-          <p>Movie not found</p>
+          <p>Movies were not found</p>
         ) : (
           <div className="row">
             {api.Search.map((movie, i) => (
